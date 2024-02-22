@@ -76,12 +76,60 @@ public class VehicleSettingEditor : Editor
         SetupWheelCollider(wheelCollider2);
         SetupWheelCollider(wheelCollider3);
         SetupWheelCollider(wheelCollider4);
+
+        tireBackLeft.parent = backLeftWheel.transform;
+        tireBackLeft.localPosition = Vector3.zero;
+        tireBackRight.parent = backRightWheel.transform;
+        tireBackRight.localPosition = Vector3.zero;
+        tireFrontLeft.parent = frontLeftWheel.transform;
+        tireFrontLeft.localPosition = Vector3.zero;
+        tireFrontRight.parent = frontRightWheel.transform;
+        tireFrontRight.localPosition = Vector3.zero;
+
+        //4.5 휠 드라이버컨트롤러 스크립트 붙여주기 
+
+        WheelDriveControl wheelDriveControl = EditorHelper.AddComponent<WheelDriveControl>(selected);
+        wheelDriveControl.Init();
         //5. 리지드바디 세팅 
+        Rigidbody rb = selected.GetComponent<Rigidbody>();
+        rb.mass = 900f;
+        rb.drag = 0.1f;
+        rb.angularDrag = 3f;
+        rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+
 
         //6 헤더쿼터 연결 
+        TrafficHeadquarter headquarter = FindObjectOfType<TrafficHeadquarter>();
+        if (headquarter != null)
+        {
+            vehicleControl.trafficHeadquarter = headquarter;
+
+        }
 
         //7 바디 콜라이더 붙여주고 
+        BoxCollider boxCollider = EditorHelper.AddComponent<BoxCollider>(selected);
+        boxCollider.isTrigger = true;
 
+        GameObject colliders = EditorHelper.CreateGameObject("Colliders", 
+            selected.transform );
+        colliders.transform.localPosition = Vector3.zero;
+        colliders.transform.localRotation = Quaternion.identity;
+        colliders.transform.localScale = Vector3.one;
+        GameObject Body = EditorHelper.CreateGameObject("Body", colliders.transform );
+        Body.transform.localPosition = Vector3.zero;
+        Body.transform.localRotation = Quaternion.identity;
+        Body.transform.localScale = Vector3.one;
+
+        BoxCollider bodyCollider = EditorHelper.AddComponent<BoxCollider>(Body);
+        bodyCollider.center = new Vector3(0f, 0.4f, 0f);
+        bodyCollider.size = new Vector3(0.95f, 0.54f, 2.0f);
+        //만약 레이어가 없다면 엔진에 추가합니다 
+        EditorHelper.CreateGameObject(TrafficHeadquarter.VehicleTagLayer);
+        selected.tag = TrafficHeadquarter.VehicleTagLayer;
+        EditorHelper.SetLayer(selected, LayerMask.NameToLayer(TrafficHeadquarter.VehicleTagLayer)
+          ,  true);
+        //undo 그룹 단위 
+        Undo.CollapseUndoOperations(Undo.GetCurrentGroup());
         //8 레이어까지 자동주행 레이어 / AutonomousVehicle set  
 
     }
