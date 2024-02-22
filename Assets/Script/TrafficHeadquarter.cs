@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -47,5 +48,8 @@ public class TrafficHeadquarter : MonoBehaviour
         return waypoints;
     }
 
-
+    public Vector3 GetVisualPos()
+    {
+        throw new NotImplementedException();
+    }
 }
